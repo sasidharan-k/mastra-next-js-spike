@@ -1,16 +1,17 @@
 /** @type {import('next').NextConfig} */
+import dotenv from 'dotenv';
+dotenv.config();
 const nextConfig = {
   reactStrictMode: true,
   serverExternalPackages: ["@mastra/*"],
 
   // Configure rewrites to proxy requests to Mastra server
   async rewrites() {
+    const mastraDomain = (process.env.MASTRA_APP_DOMAIN || 'http://localhost:4111').replace(/\/$/, '');
     return [
-      // Proxy all other API requests to the Mastra server
       {
-        source: '/:path*',
-        // Proxy to Mastra server
-        destination: process.env.MASTRA_APP_DOMAIN || 'http://localhost:4111/:path*',
+        source: '/:path*', // Match everything
+        destination: `${mastraDomain}/:path*`, // Proxy to Heroku backend
       },
     ]
   },
